@@ -1,22 +1,27 @@
 package main
 
 import (
-    "Go_prefecture/pkg/database"
-    "Go_prefecture/handlers"
-    "github.com/gin-gonic/gin"
-    "fmt"
-    "html/template"
+	"Go_prefecture/handlers"
+	"Go_prefecture/pkg/database"
+	"fmt"
+	"html/template"
+	"os"
+	"github.com/gin-gonic/gin"
+	_ "github.com/lib/pq"
 )
 
 func main() {
-
+    database_url := os.Getenv("DATABASE_URL")
+    if database_url == " " {
+        panic("DATABASE_URL is required")
+    }
     router := gin.Default()
     router.SetFuncMap(template.FuncMap{
         "add": func(a, b int) int { return a + b },
         "sub": func(a, b int) int { return a - b },
     })
     router.LoadHTMLGlob("../src/templates/*")
-    db, err := database.InitDB("../new.db")
+    db, err := database.InitDB(database_url)
     if err != nil {
         panic(err)
     }
